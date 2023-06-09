@@ -11,19 +11,22 @@ datasource db {
 }
 
 model User{
-  id   String   @id @default(uuid()) @map("_id") @db.ObjectId
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
   age Int
   name String
   email String
-  isAdmin Boolean 
-  preferences Json
+  isAdmin Boolean? 
+  preferences Json?
   posts Post[]  @relation("Written")
   favorites Post[] @relation("Favorited")
   userPreference UserPreferences?
+
+  @@unique([age, name]) //same name and diff age or same age and diff name but not the same age and name
+  @@index([email]) //creates an index email
 }
 
 model UserPreferences{
-  id String   @id @default(uuid()) @map("_id") @db.ObjectId
+  id String   @id @default(auto()) @map("_id") @db.ObjectId
   emailUpdates Boolean
   user User @relation(fields: [userId], references: [id])
   userId String @unique @db.ObjectId
@@ -44,7 +47,7 @@ model Post{
 }
 
 model Category{
-  id String @id @default(uuid()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
   postIDs String[] @db.ObjectId
   posts   Post[]   @relation(fields: [postIDs], references: [id])
